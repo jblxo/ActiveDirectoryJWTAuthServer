@@ -9,4 +9,30 @@ const config = {
 
 const AD = new ActiveDirectory(config);
 
+AD.getProfileInfo = (username, callback) => {
+  AD.findUser(username, (err, user) => {
+    if (err) {
+      console.log('ERROR: ' + JSON.stringify(err));
+      return;
+    }
+    if (!user) {
+      res.status(200).json({ message: `User: ${username} not found.` });
+      return;
+    } else {
+      const { displayName, mail } = user;
+      AD.getGroupMembershipForUser(username, (err, groups) => {
+        if (err) {
+          console.log('ERROR: ' + JSON.stringify(err));
+          return;
+        }
+        callback({
+          displayName,
+          mail,
+          groups: groups.map(g => g.cn)
+        });
+      });
+    }
+  });
+};
+
 module.exports = AD;
