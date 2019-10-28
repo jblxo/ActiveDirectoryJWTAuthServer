@@ -16,15 +16,24 @@ app.post(
     const { username, password } = req.body;
     ad.authenticate(username, password, function(err, auth) {
       if (err) {
-        res.status(401).json({ error: 'ERROR: ' + JSON.stringify(err) });
-        return;
+        return res.status(401).json({ error: `ERROR: ${err}` });
       }
       if (auth) {
-        res.status(200).json({ exist: auth, error: '' });
+        ad.findUser(username, (err, user) => {
+          if (err) {
+            return res.status(500).json({ error: err });
+          }
+
+          if (!user) {
+            res.status(404).json({ error: `User ${username} not found!` });
+          } else {
+            res.status(200).json({ exists: auth, user, error: '' });
+          }
+        });
       } else {
         res
           .status(401)
-          .json({ exist: auth, error: 'Wrong username or password!' });
+          .json({ exists: auth, error: 'Wrong username or password!' });
       }
     });
   },
