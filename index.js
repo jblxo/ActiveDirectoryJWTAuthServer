@@ -8,7 +8,7 @@ const app = express();
 const passport = require('./passport');
 const ad = require('./ActiveDirectoryConnector');
 const unless = require('express-unless');
-const port = 3000;
+const port = process.env.PORT || 3000;
 const refreshTokens = {};
 const opts = { failWithError: true };
 
